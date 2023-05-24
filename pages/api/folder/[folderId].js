@@ -3,22 +3,24 @@ import archidekt from 'archidekt';
 import cors from 'cors';
 import "babel-polyfill";
 
-const allowlist = ['https://dollarydo.vercel.app'];
-const corsOptionsDelegate = function(req, callback) {
-  let corsOptions;
-  // console.log(req);
-  corsOptions = { origin: true };
-  // if (allowlist.indexOf(req.rawHeaders('Origin')) !== -1) {
-  //   corsOptions = { origin: true };
-  // } else {
-  //   corsOptions = { origin: false };
-  // }
-  callback(null, corsOptions);
-};
+const allowCors = fn => async (req, res) => {
+  res.setHeader('Access-Control-Allow-Credentials', true)
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  // another common pattern
+  // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  )
+  if (req.method === 'OPTIONS') {
+    res.status(200).end()
+    return
+  }
+  return await fn(req, res)
+}
 
-export default async function handler(req, res) {
-  // await cors(corsOptionsDelegate)(req, res);
-
+function handler(req, res) {
   if (req.method === 'GET') {
     const folderId = req.query.folderId;
     const folderUri = `${archidekt.api.getUri()}decks/folders/${folderId}/?dir=asc&orderBy=name`;
@@ -29,3 +31,5 @@ export default async function handler(req, res) {
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
+
+export default async allowCors(handler);
