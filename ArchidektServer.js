@@ -35,6 +35,10 @@ app.get('/decks/:deckId', async (req, res) => {
   res.send(JSON.stringify(response.data)); 
 })
 
+app.get('/', (req, res) => {
+  res.send("Welcome to the api. Current implemented are decks/:deckId and folder/:folderId"); 
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
