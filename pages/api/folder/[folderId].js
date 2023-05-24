@@ -20,7 +20,7 @@ const allowCors = fn => async (req, res) => {
   return await fn(req, res)
 }
 
-function handler(req, res) {
+async function handler(req, res) {
   if (req.method === 'GET') {
     const folderId = req.query.folderId;
     const folderUri = `${archidekt.api.getUri()}decks/folders/${folderId}/?dir=asc&orderBy=name`;
@@ -32,4 +32,4 @@ function handler(req, res) {
   }
 }
 
-export default async allowCors(handler);
+export default allowCors(handler);
